@@ -456,7 +456,7 @@ function Nav(): React.JSX.Element {
         {navLinks.map((label) => (
           <motion.a
             key={label}
-            href={label === "Resume" ? "/resume.pdf" : `#${label.toLowerCase()}`}
+            href={label === "Resume" ? "/api/resume" : `#${label.toLowerCase()}`}
             target={label === "Resume" ? "_blank" : undefined}
             rel={label === "Resume" ? "noopener noreferrer" : undefined}
             whileHover={{ y: -2, scale: label === "Resume" ? 1.05 : 1 }}
@@ -803,7 +803,7 @@ function Contact(): React.JSX.Element {
             Email me
           </motion.div>
           <motion.div
-            onClick={() => window.open("/resume.pdf", "_blank")}
+            onClick={() => window.open("/api/resume", "_blank")}
             whileHover={{ scale: 1.06, y: -3 }}
             className="px-8 py-3 rounded-full border border-gray-500 text-gray-300 hover:text-white hover:border-white hover:bg-white/5 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] transition-all duration-200 font-semibold text-sm cursor-pointer"
           >
@@ -841,7 +841,7 @@ function Footer(): React.JSX.Element {
           LinkedIn
         </motion.a>
         <motion.a
-          href="/resume.pdf"
+          href="/api/resume"
           target="_blank"
           rel="noopener noreferrer"
           whileHover={{ scale: 1.08, y: -2 }}
