@@ -795,22 +795,20 @@ function Contact(): React.JSX.Element {
           transition={{ duration: 0.6, delay: 0.25 }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
-          <motion.a
-            href="mailto:shruthii1819@gmail.com"
+          <motion.div
+            onClick={() => window.location.href = "mailto:shruthii1819@gmail.com"}
             whileHover={{ scale: 1.06, y: -3 }}
-            className="px-8 py-3 rounded-full bg-gray-700 text-white hover:bg-gray-600 hover:shadow-[0_0_40px_rgba(99,102,241,0.15)] transition-all duration-200 font-semibold text-sm"
+            className="px-8 py-3 rounded-full bg-gray-700 text-white hover:bg-gray-600 hover:shadow-[0_0_40px_rgba(99,102,241,0.15)] transition-all duration-200 font-semibold text-sm cursor-pointer"
           >
             Email me
-          </motion.a>
-          <motion.a
-            href="/resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
+          </motion.div>
+          <motion.div
+            onClick={() => window.open("/resume.pdf", "_blank")}
             whileHover={{ scale: 1.06, y: -3 }}
-            className="px-8 py-3 rounded-full border border-gray-500 text-gray-300 hover:text-white hover:border-white hover:bg-white/5 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] transition-all duration-200 font-semibold text-sm"
+            className="px-8 py-3 rounded-full border border-gray-500 text-gray-300 hover:text-white hover:border-white hover:bg-white/5 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] transition-all duration-200 font-semibold text-sm cursor-pointer"
           >
             View Resume
-          </motion.a>
+          </motion.div>
         </motion.div>
       </div>
     </motion.section>
