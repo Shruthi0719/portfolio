@@ -11,7 +11,7 @@ export async function GET() {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": 'inline; filename="Shruthi_Resume.pdf"',
+        "Content-Disposition": 'attachment; filename="Shruthi_Yadav_Resume.pdf"',
       },
     });
   } catch (error) {
