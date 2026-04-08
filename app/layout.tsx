@@ -1,4 +1,8 @@
+"use client";
+
+import { useEffect } from "react";
 import type { Metadata } from "next";
+import Lenis from "@studio-freight/lenis";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +26,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.4,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smooth: true,
+      smoothTouch: true,
+      touchMultiplier: 1.8,
+    });
+
+    let frameId: number;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      frameId = requestAnimationFrame(raf);
+    };
+
+    frameId = requestAnimationFrame(raf);
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
   return (
     <html
       lang="en"

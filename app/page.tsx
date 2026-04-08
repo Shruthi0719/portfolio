@@ -233,6 +233,40 @@ const fadeUp = {
   }),
 };
 
+const premiumText = {
+  hidden: { opacity: 0, y: 50 },
+  show: (i: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.85, ease, delay: i * 0.08 },
+  }),
+};
+
+const splitReveal = {
+  hidden: { opacity: 0, y: 50 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.9, ease, staggerChildren: 0.08 },
+  },
+};
+
+const sectionReveal = {
+  hidden: { opacity: 0, y: 32, scale: 0.96, filter: "blur(10px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: { duration: 0.75, ease },
+  },
+};
+
+const heroLines = [
+  "I enjoy building systems",
+  "that scale and solve real problems.",
+];
+
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 function useScrollReveal() {
   const ref = useRef<HTMLElement>(null);
@@ -477,20 +511,25 @@ function Nav(): React.JSX.Element {
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero(): React.JSX.Element {
   const { scrollY } = useScroll();
-  const y: MotionValue<number> = useTransform(scrollY, [0, 500], [0, 80]);
-  const opacity: MotionValue<number> = useTransform(
-    scrollY,
-    [0, 400],
-    [1, 0]
-  );
+  const y: MotionValue<number> = useTransform(scrollY, [0, 500], [0, -100]);
+  const scale: MotionValue<number> = useTransform(scrollY, [0, 500], [1, 1.1]);
+  const opacity: MotionValue<number> = useTransform(scrollY, [0, 420], [1, 0.88]);
+  const bgY: MotionValue<number> = useTransform(scrollY, [0, 700], [0, -50]);
+  const glowScale: MotionValue<number> = useTransform(scrollY, [0, 700], [1, 1.05]);
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden px-8 md:px-12 pt-24">
-      {/* Ambient blobs */}
-      <div className="pointer-events-none absolute -top-48 -left-48 w-[600px] h-[600px] rounded-full bg-purple-600/5 blur-[120px]" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 w-[400px] h-[400px] rounded-full bg-blue-500/5 blur-[100px]" />
+      {/* Parallax glow layers */}
+      <motion.div
+        style={{ y: bgY, scale: glowScale }}
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+      >
+        <div className="absolute left-1/2 top-20 w-[520px] h-[520px] -translate-x-1/2 rounded-full bg-purple-500/10 blur-[120px]" />
+        <div className="absolute right-24 top-40 w-[420px] h-[420px] rounded-full bg-blue-400/10 blur-[110px]" />
+        <div className="absolute left-0 bottom-0 w-full h-[220px] bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.14),transparent_45%)]" />
+      </motion.div>
 
-      <motion.div style={{ y, opacity }} className="relative z-10 max-w-5xl">
+      <motion.div style={{ y, opacity, scale }} className="relative z-10 max-w-5xl">
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -504,19 +543,28 @@ function Hero(): React.JSX.Element {
           </p>
         </motion.div>
 
-        <motion.h1
-          variants={fadeUp}
+        <motion.div
+          variants={splitReveal}
           initial="hidden"
           animate="show"
-          custom={1}
-          className="font-semibold leading-[1.15] tracking-[-0.015em] text-5xl md:text-6xl lg:text-6xl mb-8 text-white"
+          className="overflow-hidden mb-8"
         >
-          I enjoy building systems
-          <br />
-          <span className="text-gray-300">
-            that scale and solve real problems.
-          </span>
-        </motion.h1>
+          <motion.h1 className="font-semibold leading-[1.05] tracking-[-0.015em] text-5xl md:text-6xl lg:text-6xl text-white">
+            {heroLines.map((line, index) => (
+              <motion.div key={line} className="block overflow-hidden">
+                {line.split(" ").map((word, wordIndex) => (
+                  <motion.span
+                    key={`${word}-${index}-${wordIndex}`}
+                    variants={premiumText}
+                    className="inline-block mr-2"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </motion.div>
+            ))}
+          </motion.h1>
+        </motion.div>
 
         <motion.p
           variants={fadeUp}
@@ -597,24 +645,45 @@ function SectionLabel({ label }: { label: string }): React.JSX.Element {
 // ─── About ────────────────────────────────────────────────────────────────────
 function About(): React.JSX.Element {
   const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const burstScale = useTransform(scrollYProgress, [0, 0.8], [0.85, 1.12]);
+  const burstOpacity = useTransform(scrollYProgress, [0, 0.25, 0.65], [0, 0.28, 0.08]);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
     <motion.section
       id="about"
       ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
-      transition={{ duration: 0.75, ease }}
-      className="px-8 md:px-12 py-32"
+      variants={sectionReveal}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      className="relative px-8 md:px-12 py-32 overflow-hidden"
     >
+      <motion.div
+        style={{ scale: burstScale, opacity: burstOpacity }}
+        className="pointer-events-none absolute right-0 top-0 w-[420px] h-[420px] rounded-full bg-pink-500/10 blur-[120px]"
+      />
+      <motion.div
+        style={{ opacity: burstOpacity }}
+        className="pointer-events-none absolute left-8 bottom-24 w-[320px] h-[320px] rounded-full bg-violet-500/12 blur-[100px]"
+      />
+
       <SectionLabel label="About" />
       <div className="grid md:grid-cols-2 gap-16 md:gap-24 items-start">
         <div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-[1.2] tracking-tight text-white mb-6">
-            Building systems{" "}
-            <span className="text-gray-400">that work at scale.</span>
-          </h2>
+          <motion.h2
+            variants={splitReveal}
+            initial="hidden"
+            animate={isInView ? "show" : "hidden"}
+            className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-[1.2] tracking-tight text-white mb-6"
+          >
+            <motion.span variants={premiumText} className="block">
+              Building systems
+            </motion.span>
+            <motion.span variants={premiumText} className="block text-gray-400">
+              that work at scale.
+            </motion.span>
+          </motion.h2>
           <div className="mt-10 flex flex-wrap gap-2">
             {skills.map((s) => (
               <motion.span
@@ -628,12 +697,22 @@ function About(): React.JSX.Element {
           </div>
         </div>
         <div className="space-y-7 text-gray-300 text-base leading-relaxed">
-          <p>
+          <motion.p
+            variants={premiumText}
+            initial="hidden"
+            animate={isInView ? "show" : "hidden"}
+            className=""
+          >
             I&apos;m a full-stack developer focused on building scalable systems and real-time applications. I work across the entire stack—backend APIs, cloud infrastructure, and frontend interfaces—with a focus on performance and elegant architecture.
-          </p>
-          <p>
+          </motion.p>
+          <motion.p
+            variants={premiumText}
+            initial="hidden"
+            animate={isInView ? "show" : "hidden"}
+            className=""
+          >
             I&apos;m interested in challenging problems that require careful system design, whether that&apos;s event-driven architectures, real-time synchronization, or hardware-level optimization. Currently exploring startup-stage opportunities.
-          </p>
+          </motion.p>
         </div>
       </div>
     </motion.section>
@@ -651,9 +730,9 @@ function Projects(): React.JSX.Element {
       <motion.section
         id="work"
         ref={ref}
-        initial={{ opacity: 0, y: 32 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
-        transition={{ duration: 0.75, ease }}
+        variants={sectionReveal}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
         className="px-8 md:px-12 py-32"
       >
         <SectionLabel label="Selected Work" />
@@ -661,44 +740,41 @@ function Projects(): React.JSX.Element {
           {projects.map((p, i) => (
             <motion.div
               key={p.num}
-              initial={{ opacity: 0, x: -12 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.6, delay: i * 0.08, ease }}
-              whileHover={{ scale: 1.01 }}
+              initial={{ opacity: 0, y: 28, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-70px" }}
+              transition={{ duration: 0.65, delay: i * 0.08, ease }}
+              whileHover={{ scale: 1.03, rotateX: 1.1, boxShadow: "0 32px 90px rgba(99,102,241,0.16)" }}
               className="group relative"
             >
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <motion.div
-                className="block cursor-pointer"
-                whileHover={{ scale: 1.02 }}
-              >
-                <div className="relative px-6 py-7 border border-gray-700 rounded-lg hover:border-gray-500 transition-all duration-300 flex items-center justify-between hover:shadow-[0_0_40px_rgba(99,102,241,0.1)]">
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/10 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+              <div className="relative">
+                <div className="relative px-6 py-7 border border-white/10 rounded-3xl bg-zinc-950/90 backdrop-blur-xl transition-all duration-300 hover:border-purple-400/30">
                   <div className="flex items-center gap-6 flex-1">
                     <span className="w-10 shrink-0 text-xs font-mono text-gray-500 group-hover:text-gray-300 transition-colors duration-300">
                       {p.num}
                     </span>
                     <div className="flex-1 min-w-0">
-                    <div className="text-lg md:text-lg font-medium tracking-tight text-white/80 group-hover:text-white transition-colors duration-300">
-                      {p.title}
-                    </div>
-                    <div className="mt-2 text-[13px] text-white/40">{p.desc}</div>
-                    <div className="mt-2 text-xs text-gray-400">{p.impact}</div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {p.tags.map((t) => (
-                        <motion.span
-                          key={t}
-                          whileHover={{ scale: 1.05, y: -1 }}
-                          className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-white/30 group-hover:text-white/50 group-hover:border-indigo-500/50 group-hover:shadow-[0_0_12px_rgba(99,102,241,0.2)] transition-all duration-300"
-                        >
-                          {t}
-                        </motion.span>
-                      ))}
-                    </div>
+                      <div className="text-lg md:text-lg font-medium tracking-tight text-white/80 group-hover:text-white transition-colors duration-300">
+                        {p.title}
+                      </div>
+                      <div className="mt-2 text-[13px] text-white/40">{p.desc}</div>
+                      <div className="mt-2 text-xs text-gray-400">{p.impact}</div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {p.tags.map((t) => (
+                          <motion.span
+                            key={t}
+                            whileHover={{ scale: 1.05, y: -1 }}
+                            className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-white/30 group-hover:text-white/50 group-hover:border-indigo-500/50 group-hover:shadow-[0_0_12px_rgba(99,102,241,0.2)] transition-all duration-300"
+                          >
+                            {t}
+                          </motion.span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="hidden md:flex flex-col items-end gap-2">
+                <div className="hidden md:flex flex-col items-end gap-2 mt-4">
                   <div className="flex gap-3">
                     {p.caseStudy && (
                       <motion.button
@@ -732,7 +808,7 @@ function Projects(): React.JSX.Element {
                     ↗
                   </span>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -754,9 +830,9 @@ function Contact(): React.JSX.Element {
     <motion.section
       id="contact"
       ref={ref}
-      initial={{ opacity: 0, y: 24 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      transition={{ duration: 0.8, ease }}
+      variants={sectionReveal}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
       className="relative px-8 md:px-12 py-48 text-center overflow-hidden"
     >
       {/* Ambient glow */}
