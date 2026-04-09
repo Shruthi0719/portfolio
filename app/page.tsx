@@ -262,10 +262,7 @@ const sectionReveal = {
   },
 };
 
-const heroLines = [
-  "I enjoy building systems",
-  "that scale and solve real problems.",
-];
+const heroWords = ["Curious", "enough", "to", "figure", "it", "out.", "Careful", "enough", "to", "do", "it", "right."];
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 function useScrollReveal() {
@@ -550,19 +547,17 @@ function Hero(): React.JSX.Element {
           className="overflow-hidden mb-8"
         >
           <motion.h1 className="font-semibold leading-[1.05] tracking-[-0.015em] text-5xl md:text-6xl lg:text-6xl text-white">
-            {heroLines.map((line, index) => (
-              <motion.div key={line} className="block overflow-hidden">
-                {line.split(" ").map((word, wordIndex) => (
-                  <motion.span
-                    key={`${word}-${index}-${wordIndex}`}
-                    variants={premiumText}
-                    className="inline-block mr-2"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </motion.div>
-            ))}
+            <motion.div className="block overflow-hidden">
+              {heroWords.map((word, wordIndex) => (
+                <motion.span
+                  key={`${word}-${wordIndex}`}
+                  variants={premiumText}
+                  className={`inline-block mr-2 ${word === "right." ? "text-indigo-400" : ""}`}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.div>
           </motion.h1>
         </motion.div>
 
@@ -573,7 +568,7 @@ function Hero(): React.JSX.Element {
           custom={2}
           className="mt-6 text-base text-gray-300 max-w-2xl leading-relaxed"
         >
-          Full-stack developer with hands-on experience in cloud infrastructure, real-time systems, and hardware acceleration. I focus on building scalable architectures and writing clean, maintainable code.
+          Full-stack developer. Curious by nature. Serious about craft.
         </motion.p>
 
         <motion.p
@@ -703,7 +698,7 @@ function About(): React.JSX.Element {
             animate={isInView ? "show" : "hidden"}
             className=""
           >
-            I&apos;m a full-stack developer focused on building scalable systems and real-time applications. I work across the entire stack—backend APIs, cloud infrastructure, and frontend interfaces—with a focus on performance and elegant architecture.
+            I&apos;m a full-stack developer who enjoys working on problems that involve real-time systems, scalability, and clean architecture.
           </motion.p>
           <motion.p
             variants={premiumText}
@@ -711,7 +706,15 @@ function About(): React.JSX.Element {
             animate={isInView ? "show" : "hidden"}
             className=""
           >
-            I&apos;m interested in challenging problems that require careful system design, whether that&apos;s event-driven architectures, real-time synchronization, or hardware-level optimization. Currently exploring startup-stage opportunities.
+            I focus on writing code that is simple, reliable, and easy to reason about. I care about how things work under the hood — not just how they look.
+          </motion.p>
+          <motion.p
+            variants={premiumText}
+            initial="hidden"
+            animate={isInView ? "show" : "hidden"}
+            className=""
+          >
+            Lately I&apos;ve been building systems around collaboration, cloud infrastructure, and performance.
           </motion.p>
         </div>
       </div>
