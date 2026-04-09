@@ -52,7 +52,7 @@ export default function ResumePage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mt-8 text-center text-gray-400 text-sm"
         >
-          <p>Can't see the preview? <a href="/api/resume-download" className="text-indigo-400 hover:text-indigo-300">Download the PDF</a></p>
+          <p>Can&apos;t see the preview? <a href="/api/resume-download" className="text-indigo-400 hover:text-indigo-300">Download the PDF</a></p>
         </motion.div>
       </div>
     </main>

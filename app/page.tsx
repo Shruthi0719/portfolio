@@ -1,949 +1,425 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import {
-  motion,
-  useInView,
-  useScroll,
-  useTransform,
-  MotionValue,
-} from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-interface CaseStudy {
-  problem: string;
-  solution: string;
-  architecture: string[];
-  challenges: string[];
-  keyDecisions: string[];
-}
-
-interface Project {
-  num: string;
+type Project = {
+  num: "01" | "02" | "03" | "04";
   title: string;
-  desc: string;
-  impact: string;
+  description: string;
   tags: string[];
-  href: string;
-  github?: string;
+  github: string;
   live?: string;
-  caseStudy?: CaseStudy;
-  demoUrl?: string;
-}
+  featured?: boolean;
+};
 
-// ─── Data ────────────────────────────────────────────────────────────────────
 const projects: Project[] = [
   {
-    num: "/001",
+    num: "01",
     title: "ClouSec – Cloud Security Platform",
-    desc: "Event-driven monitoring detecting 10+ AWS misconfigurations in real-time",
-    impact: "Real-time cloud security misconfiguration detection",
-    tags: ["Python", "Flask", "React", "AWS"],
-    href: "#",
+    description:
+      "Event-driven cloud security system monitoring AWS infrastructure in real time using CloudTrail and EventBridge.",
+    tags: ["Python", "Flask", "AWS", "React"],
     github: "https://github.com/Shruthi0719/ClouSec",
-    live: "#",
-    demoUrl: "https://github.com/Shruthi0719/ClouSec",
-    caseStudy: {
-      problem: "Cloud infrastructure vulnerabilities are frequently missed during audits, leading to security breaches. Manual reviews are time-consuming and error-prone.",
-      solution: "Built an event-driven system that continuously monitors AWS APIs for misconfigured resources, automatically flagging security risks in real-time.",
-      architecture: [
-        "EventBridge → Lambda pipelines for real-time AWS API monitoring",
-        "Python backend analyzing resource configurations against security rules",
-        "Flask REST API for rule management and reporting",
-        "React dashboard with real-time alerts and remediation guidance",
-      ],
-      challenges: [
-        "Handling high-volume AWS API events without throttling",
-        "Distinguishing between intentional and accidental misconfigurations",
-        "Providing actionable remediation steps for diverse AWS services",
-      ],
-      keyDecisions: [
-        "Chose EventBridge over polling for cost-efficiency and real-time detection",
-        "Implemented rule-based system allowing custom security policies",
-        "Used Lambda for serverless scalability without infrastructure overhead",
-      ],
-    },
+    featured: true,
   },
   {
-    num: "/002",
+    num: "02",
     title: "CollabCode – Real-Time Code Editor",
-    desc: "High-performance collaborative IDE with sub-100ms sync latency",
-    impact: "Seamless real-time collaborative code editing",
-    tags: ["JavaScript", "Node.js", "WebSockets", "React"],
-    href: "#",
+    description:
+      "Real-time collaborative coding platform with sub-100ms sync latency using WebSockets and Operational Transformation.",
+    tags: ["React", "Node.js", "WebSockets"],
     github: "https://github.com/Shruthi0719/CollabCode",
     live: "https://collabcode-x.vercel.app/",
-    demoUrl: "https://collabcode-x.vercel.app/",
-    caseStudy: {
-      problem: "Existing collaborative tools suffer from sync conflicts, latency issues, and poor performance degradation with multiple users. Real-time editing at scale is difficult.",
-      solution: "Engineered a collaborative editor with operational transformation for conflict resolution, optimized WebSocket communication, and intelligent caching for sub-100ms latency.",
-      architecture: [
-        "Node.js server with WebSocket connections for real-time bidirectional communication",
-        "Operational Transformation algorithm for conflict-free collaborative editing",
-        "Redis for session management and cursor position tracking",
-        "React editor with Monaco integration and optimistic UI updates",
-        "Binary protocol optimization to reduce payload size by 70%",
-      ],
-      challenges: [
-        "Resolving concurrent edits without losing content or creating conflicts",
-        "Maintaining sub-100ms latency with 100+ concurrent users",
-        "Handling network disconnections and reconnection sync",
-        "Managing memory efficiently with large documents",
-      ],
-      keyDecisions: [
-        "Used Operational Transformation over CRDT for predictable performance",
-        "Implemented binary protocol instead of JSON for 70% bandwidth reduction",
-        "Built custom cursor sync system to avoid latency from position updates",
-        "Chose Redis for fast session state rather than database queries",
-      ],
-    },
+    featured: true,
   },
   {
-    num: "/003",
+    num: "03",
     title: "AI Traffic Monitoring System",
-    desc: "Smart traffic signal optimization using computational logic & OpenCV",
-    impact: "Smart traffic optimization with computer vision",
+    description:
+      "Smart traffic signal optimization using OpenCV and computational logic.",
     tags: ["Python", "OpenCV", "Image Processing"],
-    href: "#",
-    github: "https://github.com/Shruthi0719/TrafficOptimizer",
-    live: "#",
-    demoUrl: "https://github.com/Shruthi0719/TrafficOptimizer",
-    caseStudy: {
-      problem: "Fixed-interval traffic signals cause unnecessary congestion. Static timing doesn't adapt to real-world traffic patterns, wasting commuter time and fuel.",
-      solution: "Deployed computer vision system that analyzes real-time traffic density from camera feeds and dynamically adjusts signal timing using optimization algorithms.",
-      architecture: [
-        "OpenCV for vehicle detection and density estimation from traffic camera feeds",
-        "YOLO-based object detection for accurate vehicle counting",
-        "Optimization algorithms (greedy + local search) for signal timing",
-        "Python backend processing traffic data and computing optimal intervals",
-        "Real-time monitoring dashboard showing traffic metrics",
-      ],
-      challenges: [
-        "Accurate vehicle detection under varying lighting and weather conditions",
-        "Processing video streams within latency constraints for real-time decisions",
-        "Optimizing traffic flow across multiple intersections (NP-hard problem)",
-        "Handling edge cases like accidents or unusual traffic patterns",
-      ],
-      keyDecisions: [
-        "Used YOLO for speed and accuracy vs traditional computer vision methods",
-        "Implemented greedy + local search for balance between optimality and speed",
-        "Stored traffic patterns historically to predict peak hours",
-        "Built feedback loops to learn from intersection-specific patterns",
-      ],
-    },
+    github: "https://github.com/Shruthi0719/AI-powered-smart-traffic-monitoring-system",
   },
   {
-    num: "/004",
+    num: "04",
     title: "Hospital Patient Management System",
-    desc: "Full-stack system for managing patient records with secure CRUD operations",
-    impact: "Secure patient record management system",
+    description:
+      "Full-stack system for managing patient records with secure CRUD operations.",
     tags: ["Node.js", "Express", "MongoDB", "React"],
-    href: "#",
     github: "https://github.com/Shruthi0719/Hospital-Patient-Management-System",
-    live: "#",
-    demoUrl: "https://github.com/Shruthi0719/Hospital-Patient-Management-System",
-    caseStudy: {
-      problem: "Hospitals struggle with fragmented patient records across systems. Manual data entry causes errors, duplicate records, and patient privacy risks.",
-      solution: "Built a centralized, HIPAA-compliant patient management system with secure record storage, role-based access control, and audit logging for regulatory compliance.",
-      architecture: [
-        "Node.js + Express backend with JWT authentication and role-based middleware",
-        "MongoDB for flexible schema supporting diverse patient data",
-        "End-to-end encryption for sensitive medical information",
-        "React frontend with intuitive patient search and record management",
-        "Comprehensive audit logs for all data access and modifications",
-      ],
-      challenges: [
-        "Ensuring HIPAA compliance with proper encryption and access controls",
-        "Handling concurrent access to patient records safely",
-        "Preventing data duplication while merging existing records",
-        "Balancing usability with security requirements",
-      ],
-      keyDecisions: [
-        "Implemented field-level encryption for PII instead of just transport encryption",
-        "Used MongoDB for schema flexibility - patient records vary significantly",
-        "Built role-based access with doctor/admin/staff permission levels",
-        "Maintained immutable audit trail for compliance and debugging",
-      ],
-    },
-  },
-  {
-    num: "/005",
-    title: "FPGA IP Core Design",
-    desc: "RTL design and verification for DLRL/DRDO with Xilinx Vivado",
-    impact: "Hardware-accelerated IP core design",
-    tags: ["FPGA", "RTL", "Xilinx"],
-    href: "#",
-    github: "#",
-    live: "#",
-    demoUrl: "#",
-    caseStudy: {
-      problem: "CPU-based signal processing was too slow for real-time high-throughput applications. Software implementation couldn't meet latency and throughput requirements.",
-      solution: "Designed specialized FPGA IP core in RTL that achieves 40% performance improvement through hardware parallelism and optimized data pipelines.",
-      architecture: [
-        "Pipelined architecture with parallel processing stages",
-        "Dedicated hardware for matrix operations and signal transformations",
-        "Memory hierarchy optimization for bandwidth-critical operations",
-        "AXI4 interface for seamless integration with system on chip",
-      ],
-      challenges: [
-        "Meeting strict timing constraints while optimizing resource usage",
-        "Debugging hardware issues without visibility into execution",
-        "Balancing throughput with resource (LUT/BRAM) constraints",
-        "Ensuring correctness through comprehensive simulation and verification",
-      ],
-      keyDecisions: [
-        "Implemented pipelining to maximize throughput at cost of latency",
-        "Used block RAM for frequently accessed data to reduce BRAM usage",
-        "Designed AXI4 slave interface for AMBA compatibility",
-        "Wrote extensive Python testbenches to verify behavioral correctness before synthesis",
-      ],
-    },
   },
 ];
 
-const skills: string[] = [
-  "React.js",
-  "Node.js",
-  "Python",
-  "JavaScript",
-  "Flask",
-  "AWS",
-  "MongoDB",
-  "SQL",
-  "WebSockets",
-  "Linux",
-  "Git",
+const codeSnippets = [
+  "const editor = new CollabEditor({ sync: 'websocket' })",
+  "await monitor.detect({ service: 'AWS', realtime: true })",
+  "if (latency < 100) sync.broadcast(delta)",
+  "export const scale = (fn) => cluster.fork(fn)",
 ];
 
-const navLinks: string[] = ["Work", "About", "Writing", "Contact", "Resume"];
-const footerLinks: string[] = [
-  { label: "GitHub", href: "https://github.com/Shruthi0719" },
-  { label: "LinkedIn", href: "https://linkedin.com/in/rshruthiyadav" },
-  { label: "Resume", href: "#" },
-].map((l) => typeof l === "string" ? l : l.label) as string[];
-
-const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  show: (i: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.75, ease, delay: i * 0.1 },
-  }),
-};
-
-const premiumText = {
-  hidden: { opacity: 0, y: 50 },
-  show: (i: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.85, ease, delay: i * 0.08 },
-  }),
-};
-
-const splitReveal = {
-  hidden: { opacity: 0, y: 50 },
+const sectionReveal = {
+  hidden: { opacity: 0, y: 36 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.9, ease, staggerChildren: 0.08 },
+    transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
-const sectionReveal = {
-  hidden: { opacity: 0, y: 32, scale: 0.96, filter: "blur(10px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    filter: "blur(0px)",
-    transition: { duration: 0.75, ease },
-  },
-};
-
-const heroLines = [
-  "I enjoy building systems",
-  "that scale and solve real problems.",
-];
-
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-function useScrollReveal() {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-  return { ref, isInView };
-}
-
-// ─── Cursor Glow ─────────────────────────────────────────────────────────────
-function CursorGlow(): React.JSX.Element {
-  const [pos, setPos] = useState<{ x: number; y: number }>({
-    x: -999,
-    y: -999,
-  });
+function LoadingScreen({ onDone }: { onDone: () => void }) {
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const move = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
-    window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
-  }, []);
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          setTimeout(onDone, 300);
+          return 100;
+        }
+        return prev + 4;
+      });
+    }, 35);
 
-  return (
-    <>
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          background: `radial-gradient(600px circle at ${pos.x}px ${pos.y}px, rgba(120,80,255,0.06), transparent 60%)`,
-        }}
-      />
-      <div
-        className="pointer-events-none fixed z-0 w-80 h-80 rounded-full blur-3xl opacity-20 mix-blend-screen transition-none"
-        style={{
-          left: `${pos.x}px`,
-          top: `${pos.y}px`,
-          background: "radial-gradient(circle, rgba(99,102,241,0.4), transparent 70%)",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-    </>
-  );
-}
-
-// ─── Case Study Modal ─────────────────────────────────────────────────────────
-function CaseStudyModal({
-  project,
-  onClose,
-}: {
-  project: Project | null;
-  onClose: () => void;
-}): React.JSX.Element | null {
-  if (!project?.caseStudy) return null;
+    return () => clearInterval(timer);
+  }, [onDone]);
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed inset-0 z-[110] flex items-center justify-center bg-black"
     >
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        transition={{ duration: 0.3, ease }}
-        onClick={(e) => e.stopPropagation()}
-        className="relative bg-black border border-gray-800 rounded-xl shadow-2xl max-w-3xl max-h-[80vh] overflow-y-auto"
-      >
-        {/* Close button */}
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onClose}
-          className="absolute top-6 right-6 w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-white/50 hover:text-white transition-all duration-200 z-50"
-        >
-          ✕
-        </motion.button>
-
-        <div className="p-8 md:p-12">
-          {/* Header */}
-          <div className="mb-8">
-            <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">
-              {project.num}
-            </p>
-            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-2">
-              {project.title}
-            </h2>
-            <div className="flex flex-wrap gap-2 mt-4">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-1 text-xs rounded-full border border-gray-700 text-gray-400"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Problem */}
-          <div className="mb-8 pb-8 border-b border-gray-800">
-            <h3 className="text-lg font-semibold text-gray-200 mb-3">
-              The Problem
-            </h3>
-            <p className="text-gray-400 leading-relaxed">
-              {project.caseStudy.problem}
-            </p>
-          </div>
-
-          {/* Solution */}
-          <div className="mb-8 pb-8 border-b border-gray-800">
-            <h3 className="text-lg font-semibold text-gray-200 mb-3">
-              The Solution
-            </h3>
-            <p className="text-gray-400 leading-relaxed">
-              {project.caseStudy.solution}
-            </p>
-          </div>
-
-          {/* Architecture */}
-          <div className="mb-8 pb-8 border-b border-gray-800">
-            <h3 className="text-lg font-semibold text-gray-200 mb-4">
-              Architecture & Implementation
-            </h3>
-            <ul className="space-y-2">
-              {project.caseStudy.architecture.map((item, i) => (
-                <li key={i} className="flex gap-3 text-gray-400">
-                  <span className="text-indigo-400 mt-1">▪</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Challenges */}
-          <div className="mb-8 pb-8 border-b border-gray-800">
-            <h3 className="text-lg font-semibold text-gray-200 mb-4">
-              Key Challenges Solved
-            </h3>
-            <ul className="space-y-2">
-              {project.caseStudy.challenges.map((challenge, i) => (
-                <li key={i} className="flex gap-3 text-gray-400">
-                  <span className="text-orange-400 mt-1">◆</span>
-                  <span>{challenge}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Key Decisions */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-200 mb-4">
-              Key Technical Decisions
-            </h3>
-            <ul className="space-y-2">
-              {project.caseStudy.keyDecisions.map((decision, i) => (
-                <li key={i} className="flex gap-3 text-gray-400">
-                  <span className="text-purple-400 mt-1">★</span>
-                  <span>{decision}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex flex-wrap gap-4 pt-6 border-t border-gray-800 mt-8">
-            {project.demoUrl && project.demoUrl !== "#" && (
-              <motion.div
-                onClick={() => window.open(project.demoUrl, "_blank")}
-                whileHover={{ scale: 1.05, y: -2 }}
-                className="px-6 py-2.5 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-all duration-200 cursor-pointer"
-              >
-                View Demo →
-              </motion.div>
-            )}
-            {project.github && project.github !== "#" && (
-              <motion.div
-                onClick={() => window.open(project.github, "_blank")}
-                whileHover={{ scale: 1.05, y: -2 }}
-                className="px-6 py-2.5 rounded-full border border-gray-600 text-gray-300 text-sm font-semibold hover:text-white hover:border-gray-400 transition-all duration-200 cursor-pointer"
-              >
-                View Code
-              </motion.div>
-            )}
-          </div>
-        </div>
-      </motion.div>
+      <p className="font-[var(--font-heading)] text-7xl font-extrabold text-[#F5F5F0]">
+        {Math.min(progress, 100)}%
+      </p>
     </motion.div>
   );
 }
 
-// ─── Nav ─────────────────────────────────────────────────────────────────────
-function Nav(): React.JSX.Element {
-  const [scrolled, setScrolled] = useState<boolean>(false);
+function Cursor() {
+  const x = useMotionValue(-100);
+  const y = useMotionValue(-100);
+  const ringX = useSpring(x, { stiffness: 170, damping: 20 });
+  const ringY = useSpring(y, { stiffness: 170, damping: 20 });
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return (
-    <motion.nav
-      initial={{ opacity: 0, y: -16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease }}
-      className={[
-        "fixed top-0 inset-x-0 z-50 flex items-center justify-between",
-        "px-8 md:px-12 py-6 transition-all duration-300",
-        scrolled
-          ? "border-b border-white/5 bg-black/80 backdrop-blur-xl"
-          : "bg-transparent",
-      ].join(" ")}
-    >
-      <motion.span
-        whileHover={{ scale: 1.04 }}
-        className="text-lg md:text-xl font-bold tracking-tight cursor-pointer"
-      >
-        R Shruthi Yadav
-      </motion.span>
-      <div className="hidden md:flex items-center gap-8">
-        {navLinks.map((label) => (
-          <motion.a
-            key={label}
-            href={label === "Resume" ? "/resume" : `#${label.toLowerCase()}`}
-            target={label === "Resume" ? "_blank" : undefined}
-            rel={label === "Resume" ? "noopener noreferrer" : undefined}
-            whileHover={{ y: -2, scale: label === "Resume" ? 1.05 : 1 }}
-            className={`text-[13px] tracking-wide transition-all duration-200 ${
-              label === "Resume"
-                ? "px-3 py-1.5 rounded-full border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 hover:bg-gray-900/50 font-medium"
-                : "text-white/40 hover:text-white"
-            }`}
-          >
-            {label}
-          </motion.a>
-        ))}
-      </div>
-    </motion.nav>
-  );
-}
-
-// ─── Hero ─────────────────────────────────────────────────────────────────────
-function Hero(): React.JSX.Element {
-  const { scrollY } = useScroll();
-  const y: MotionValue<number> = useTransform(scrollY, [0, 500], [0, -100]);
-  const scale: MotionValue<number> = useTransform(scrollY, [0, 500], [1, 1.1]);
-  const opacity: MotionValue<number> = useTransform(scrollY, [0, 420], [1, 0.88]);
-  const bgY: MotionValue<number> = useTransform(scrollY, [0, 700], [0, -50]);
-  const glowScale: MotionValue<number> = useTransform(scrollY, [0, 700], [1, 1.05]);
-
-  return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden px-8 md:px-12 pt-24">
-      {/* Parallax glow layers */}
-      <motion.div
-        style={{ y: bgY, scale: glowScale }}
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div className="absolute left-1/2 top-20 w-[520px] h-[520px] -translate-x-1/2 rounded-full bg-purple-500/10 blur-[120px]" />
-        <div className="absolute right-24 top-40 w-[420px] h-[420px] rounded-full bg-blue-400/10 blur-[110px]" />
-        <div className="absolute left-0 bottom-0 w-full h-[220px] bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.14),transparent_45%)]" />
-      </motion.div>
-
-      <motion.div style={{ y, opacity, scale }} className="relative z-10 max-w-5xl">
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          custom={0}
-          className="mb-8"
-        >
-          <p className="text-sm font-medium text-gray-400 mb-2">Developer • Writer</p>
-          <p className="text-xs uppercase tracking-widest text-gray-500">
-            Full-Stack Developer · Based in Hyderabad
-          </p>
-        </motion.div>
-
-        <motion.div
-          variants={splitReveal}
-          initial="hidden"
-          animate="show"
-          className="overflow-hidden mb-8"
-        >
-          <motion.h1 className="font-semibold leading-[1.05] tracking-[-0.015em] text-5xl md:text-6xl lg:text-6xl text-white">
-            {heroLines.map((line, index) => (
-              <motion.div key={line} className="block overflow-hidden">
-                {line.split(" ").map((word, wordIndex) => (
-                  <motion.span
-                    key={`${word}-${index}-${wordIndex}`}
-                    variants={premiumText}
-                    className="inline-block mr-2"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </motion.div>
-            ))}
-          </motion.h1>
-        </motion.div>
-
-        <motion.p
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          custom={2}
-          className="mt-6 text-base text-gray-300 max-w-2xl leading-relaxed"
-        >
-          Full-stack developer with hands-on experience in cloud infrastructure, real-time systems, and hardware acceleration. I focus on building scalable architectures and writing clean, maintainable code.
-        </motion.p>
-
-        <motion.p
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          custom={3}
-          className="mt-4 text-sm text-gray-400 max-w-2xl"
-        >
-          Built systems used in real-time environments, from collaborative platforms to cloud monitoring tools.
-        </motion.p>
-
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate="show"
-          custom={4}
-          className="mt-12 flex flex-wrap gap-4"
-        >
-          <motion.a
-            href="#work"
-            whileHover={{ scale: 1.06, y: -3 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-white text-black text-sm font-semibold hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all duration-200"
-          >
-            View Work
-          </motion.a>
-          <motion.a
-            href="#contact"
-            whileHover={{ scale: 1.06, y: -3 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-gray-500 text-gray-300 text-sm font-semibold hover:text-white hover:border-white hover:bg-white/5 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] transition-all duration-200"
-          >
-            Get in Touch →
-          </motion.a>
-        </motion.div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 1 }}
-        className="absolute bottom-10 left-8 md:left-12 flex items-center gap-3 text-[11px] uppercase tracking-[0.12em] text-white/20"
-      >
-        <span className="w-10 h-px bg-white/15" />
-        Scroll
-      </motion.div>
-    </section>
-  );
-}
-
-// ─── Divider ─────────────────────────────────────────────────────────────────
-function Divider(): React.JSX.Element {
-  return (
-    <div className="mx-8 md:mx-12 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-  );
-}
-
-// ─── Section Label ────────────────────────────────────────────────────────────
-function SectionLabel({ label }: { label: string }): React.JSX.Element {
-  return (
-    <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.16em] text-white/25 mb-16">
-      <span className="w-6 h-px bg-white/20" />
-      {label}
-    </div>
-  );
-}
-
-// ─── About ────────────────────────────────────────────────────────────────────
-function About(): React.JSX.Element {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const burstScale = useTransform(scrollYProgress, [0, 0.8], [0.85, 1.12]);
-  const burstOpacity = useTransform(scrollYProgress, [0, 0.25, 0.65], [0, 0.28, 0.08]);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-
-  return (
-    <motion.section
-      id="about"
-      ref={ref}
-      variants={sectionReveal}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      className="relative px-8 md:px-12 py-32 overflow-hidden"
-    >
-      <motion.div
-        style={{ scale: burstScale, opacity: burstOpacity }}
-        className="pointer-events-none absolute right-0 top-0 w-[420px] h-[420px] rounded-full bg-pink-500/10 blur-[120px]"
-      />
-      <motion.div
-        style={{ opacity: burstOpacity }}
-        className="pointer-events-none absolute left-8 bottom-24 w-[320px] h-[320px] rounded-full bg-violet-500/12 blur-[100px]"
-      />
-
-      <SectionLabel label="About" />
-      <div className="grid md:grid-cols-2 gap-16 md:gap-24 items-start">
-        <div>
-          <motion.h2
-            variants={splitReveal}
-            initial="hidden"
-            animate={isInView ? "show" : "hidden"}
-            className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-[1.2] tracking-tight text-white mb-6"
-          >
-            <motion.span variants={premiumText} className="block">
-              Building systems
-            </motion.span>
-            <motion.span variants={premiumText} className="block text-gray-400">
-              that work at scale.
-            </motion.span>
-          </motion.h2>
-          <div className="mt-10 flex flex-wrap gap-2">
-            {skills.map((s) => (
-              <motion.span
-                key={s}
-                whileHover={{ y: -2, scale: 1.05 }}
-                className="px-3 py-1.5 rounded-full border border-gray-600 text-xs text-gray-300 hover:border-indigo-500/50 hover:text-white hover:shadow-[0_0_12px_rgba(99,102,241,0.2)] transition-all duration-200 cursor-default"
-              >
-                {s}
-              </motion.span>
-            ))}
-          </div>
-        </div>
-        <div className="space-y-7 text-gray-300 text-base leading-relaxed">
-          <motion.p
-            variants={premiumText}
-            initial="hidden"
-            animate={isInView ? "show" : "hidden"}
-            className=""
-          >
-            I&apos;m a full-stack developer focused on building scalable systems and real-time applications. I work across the entire stack—backend APIs, cloud infrastructure, and frontend interfaces—with a focus on performance and elegant architecture.
-          </motion.p>
-          <motion.p
-            variants={premiumText}
-            initial="hidden"
-            animate={isInView ? "show" : "hidden"}
-            className=""
-          >
-            I&apos;m interested in challenging problems that require careful system design, whether that&apos;s event-driven architectures, real-time synchronization, or hardware-level optimization. Currently exploring startup-stage opportunities.
-          </motion.p>
-        </div>
-      </div>
-    </motion.section>
-  );
-}
-
-// ─── Projects ────────────────────────────────────────────────────────────────
-function Projects(): React.JSX.Element {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const move = (e: MouseEvent) => {
+      x.set(e.clientX);
+      y.set(e.clientY);
+    };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, [x, y]);
 
   return (
     <>
-      <motion.section
-        id="work"
-        ref={ref}
-        variants={sectionReveal}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        className="px-8 md:px-12 py-32"
-      >
-        <SectionLabel label="Selected Work" />
-        <div className="space-y-6">
-          {projects.map((p, i) => (
-            <motion.div
-              key={p.num}
-              initial={{ opacity: 0, y: 28, scale: 0.98 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "-70px" }}
-              transition={{ duration: 0.65, delay: i * 0.08, ease }}
-              whileHover={{ scale: 1.03, rotateX: 1.1, boxShadow: "0 32px 90px rgba(99,102,241,0.16)" }}
-              className="group relative"
-            >
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/10 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-all duration-300" />
-              <div className="relative">
-                <div className="relative px-6 py-7 border border-white/10 rounded-3xl bg-zinc-950/90 backdrop-blur-xl transition-all duration-300 hover:border-purple-400/30">
-                  <div className="flex items-center gap-6 flex-1">
-                    <span className="w-10 shrink-0 text-xs font-mono text-gray-500 group-hover:text-gray-300 transition-colors duration-300">
-                      {p.num}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-lg md:text-lg font-medium tracking-tight text-white/80 group-hover:text-white transition-colors duration-300">
-                        {p.title}
-                      </div>
-                      <div className="mt-2 text-[13px] text-white/40">{p.desc}</div>
-                      <div className="mt-2 text-xs text-gray-400">{p.impact}</div>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {p.tags.map((t) => (
-                          <motion.span
-                            key={t}
-                            whileHover={{ scale: 1.05, y: -1 }}
-                            className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-white/30 group-hover:text-white/50 group-hover:border-indigo-500/50 group-hover:shadow-[0_0_12px_rgba(99,102,241,0.2)] transition-all duration-300"
-                          >
-                            {t}
-                          </motion.span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="hidden md:flex flex-col items-end gap-2 mt-4">
-                  <div className="flex gap-3">
-                    {p.caseStudy && (
-                      <motion.button
-                        onClick={() => setSelectedProject(p)}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        className="px-3 py-1.5 rounded-full border border-indigo-500/50 text-indigo-400 text-[11px] font-medium hover:text-indigo-300 hover:border-indigo-400 hover:bg-indigo-500/10 transition-all duration-200"
-                      >
-                        Case Study
-                      </motion.button>
-                    )}
-                    {p.github && (
-                      <motion.div
-                        onClick={() => window.open(p.github, "_blank")}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        className="px-3 py-1.5 rounded-full border border-white/20 text-white/50 text-[11px] font-medium hover:text-white hover:border-white/40 transition-all duration-200 cursor-pointer"
-                      >
-                        Code
-                      </motion.div>
-                    )}
-                    {p.live && p.live !== "#" && (
-                      <motion.div
-                        onClick={() => window.open(p.live, "_blank")}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        className="px-3 py-1.5 rounded-full border border-white/40 text-white/70 text-[11px] font-medium hover:text-white hover:border-white/60 bg-white/5 transition-all duration-200 cursor-pointer"
-                      >
-                        Live
-                      </motion.div>
-                    )}
-                  </div>
-                  <span className="text-lg text-white/20 group-hover:text-white/50 group-hover:translate-x-1 transition-all duration-300">
-                    ↗
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-      <CaseStudyModal
-        project={selectedProject}
-        onClose={() => setSelectedProject(null)}
+      <motion.div
+        style={{ x, y }}
+        className="pointer-events-none fixed left-0 top-0 z-[95] h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#CAFF47]"
+      />
+      <motion.div
+        style={{ x: ringX, y: ringY }}
+        animate={{ scale: 1, opacity: 0.7 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="pointer-events-none fixed left-0 top-0 z-[94] h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#CAFF47]"
       />
     </>
   );
 }
 
-// ─── Contact ──────────────────────────────────────────────────────────────────
-function Contact(): React.JSX.Element {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+function CodeBackdrop() {
+  const [typed, setTyped] = useState(["", "", "", ""]);
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const target = codeSnippets[active];
+    if (typed[active].length < target.length) {
+      const t = setTimeout(() => {
+        setTyped((prev) => {
+          const next = [...prev];
+          next[active] = target.slice(0, prev[active].length + 1);
+          return next;
+        });
+      }, 24);
+      return () => clearTimeout(t);
+    }
+
+    const reset = setTimeout(() => {
+      setTyped((prev) => {
+        const next = [...prev];
+        next[active] = "";
+        return next;
+      });
+      setActive((prev) => (prev + 1) % codeSnippets.length);
+    }, 950);
+
+    return () => clearTimeout(reset);
+  }, [active, typed]);
 
   return (
-    <motion.section
-      id="contact"
-      ref={ref}
-      variants={sectionReveal}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      className="relative px-8 md:px-12 py-48 text-center overflow-hidden"
-    >
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="w-[600px] h-[300px] rounded-full bg-purple-700/5 blur-[100px]" />
-      </div>
+    <div className="pointer-events-none fixed inset-0 -z-10 font-mono text-[#CAFF47] opacity-5">
+      {typed.map((line, idx) => (
+        <motion.p
+          key={idx}
+          animate={{ opacity: active === idx ? 1 : line ? 0.6 : 0.2 }}
+          className={`absolute text-xs md:text-sm ${
+            idx === 0
+              ? "left-[7%] top-[18%]"
+              : idx === 1
+                ? "right-[9%] top-[30%]"
+                : idx === 2
+                  ? "left-[15%] bottom-[24%]"
+                  : "right-[13%] bottom-[14%]"
+          }`}
+        >
+          {line}
+        </motion.p>
+      ))}
+    </div>
+  );
+}
 
-      <div className="relative z-10 max-w-3xl mx-auto">
+export default function Home() {
+  const [loaded, setLoaded] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const heroWords = [
+    "Curious",
+    "enough",
+    "to",
+    "figure",
+    "it",
+    "out.",
+    "Careful",
+    "enough",
+    "to",
+    "do",
+    "it",
+    "right.",
+  ];
+
+  return (
+    <main className="relative min-h-screen bg-black text-[#F5F5F0]">
+      <AnimatePresence>{!loaded && <LoadingScreen onDone={() => setLoaded(true)} />}</AnimatePresence>
+      <Cursor />
+      <CodeBackdrop />
+
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-14 ${
+          scrolled ? "border-b border-[#1a1a1a] bg-black/70 backdrop-blur-xl" : "bg-transparent"
+        }`}
+      >
+        <a href="#home" className="font-[var(--font-heading)] text-xl font-extrabold">
+          R Shruthi Yadav
+        </a>
+        <div className="hidden items-center gap-7 text-sm text-[#cfcfca] md:flex">
+          <a href="#work">Work</a>
+          <a href="#about">About</a>
+          <a href="#skills">Capabilities</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </motion.nav>
+
+      <section id="home" className="flex min-h-screen flex-col justify-center px-6 py-28 md:px-14 md:py-36">
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }}
+          animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="max-w-5xl font-[var(--font-heading)] text-5xl font-extrabold leading-[1.02] md:text-6xl lg:text-7xl"
+        >
+          {heroWords.map((word, i) => (
+            <span
+              key={`${word}-${i}`}
+              className={`mr-3 inline-block ${word === "right." ? "text-[#CAFF47]" : "text-[#F5F5F0]"}`}
+            >
+              {word}
+            </span>
+          ))}
+        </motion.h1>
+
         <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-xs uppercase tracking-[0.16em] text-gray-500 mb-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+          className="mt-8 max-w-2xl text-sm leading-8 text-[#9d9d98]"
         >
-          Get in Touch
+          Full-stack developer. Curious by nature. Serious about craft.
         </motion.p>
-        <motion.h2
-          initial={{ opacity: 0, y: 12 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="text-4xl md:text-5xl lg:text-5xl font-semibold tracking-tight leading-tight mb-6 text-white"
-        >
-          Currently looking for full-time software engineering opportunities.
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-base text-gray-300 mb-12"
-        >
-          Let&apos;s connect if you have an interesting role or project to discuss.
-        </motion.p>
+
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          initial={{ opacity: 0, y: 16 }}
+          animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }}
+          className="mt-10 flex items-center justify-end gap-5"
         >
-          <motion.div
-            onClick={() => window.location.href = "mailto:shruthii1819@gmail.com"}
-            whileHover={{ scale: 1.06, y: -3 }}
-            className="px-8 py-3 rounded-full bg-gray-700 text-white hover:bg-gray-600 hover:shadow-[0_0_40px_rgba(99,102,241,0.15)] transition-all duration-200 font-semibold text-sm cursor-pointer"
-          >
-            Email me
-          </motion.div>
-          <motion.div
-            onClick={() => window.open("/resume", "_blank")}
-            whileHover={{ scale: 1.06, y: -3 }}
-            className="px-8 py-3 rounded-full border border-gray-500 text-gray-300 hover:text-white hover:border-white hover:bg-white/5 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] transition-all duration-200 font-semibold text-sm cursor-pointer"
-          >
-            View Resume
-          </motion.div>
+          <a href="#work" className="rounded-full bg-[#CAFF47] px-6 py-3 text-sm font-semibold text-black">
+            View Work →
+          </a>
+          <a href="#contact" className="text-sm text-[#cecec9]">
+            Get in Touch
+          </a>
         </motion.div>
-      </div>
-    </motion.section>
-  );
-}
 
-// ─── Footer ──────────────────────────────────────────────────────────────────
-function Footer(): React.JSX.Element {
-  return (
-    <footer className="px-8 md:px-12 py-10 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-6">
-      <span className="text-xs text-gray-500">© 2026 R Shruthi Yadav</span>
-      <div className="flex items-center gap-8">
-        <motion.a
-          href="https://github.com/Shruthi0719"
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ y: -2, x: 2 }}
-          className="text-xs text-gray-400 hover:text-white transition-colors duration-200 font-medium flex items-center gap-1"
-        >
-          View my code on GitHub →
-        </motion.a>
-        <span className="text-gray-700">•</span>
-        <motion.a
-          href="https://linkedin.com/in/rshruthiyadav"
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ y: -2 }}
-          className="text-xs text-gray-400 hover:text-white transition-colors duration-200 font-medium"
-        >
-          LinkedIn
-        </motion.a>
-        <motion.a
-          href="/resume"
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.08, y: -2 }}
-          className="text-xs px-4 py-1.5 rounded-full border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 hover:bg-gray-900/50 font-medium transition-all duration-200"
-        >
-          Resume
-        </motion.a>
-      </div>
-    </footer>
-  );
-}
+        <p className="absolute right-2 top-1/2 -translate-y-1/2 rotate-180 text-[10px] tracking-[0.4em] text-[#5e5e5b] [writing-mode:vertical-rl]">
+          SCROLL
+        </p>
+      </section>
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-export default function Home(): React.JSX.Element {
-  return (
-    <main className="bg-black text-white min-h-screen antialiased">
-      <CursorGlow />
-      <Nav />
-      <Hero />
-      <Divider />
-      <About />
-      <Divider />
-      <Projects />
-      <Divider />
-      <Contact />
-      <Footer />
+      <motion.section
+        id="about"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+        className="px-6 py-36 md:px-14 md:py-44"
+      >
+        <div className="grid gap-14 md:grid-cols-2 md:gap-20">
+          <div>
+            <h2 className="max-w-xl text-4xl font-extrabold leading-tight md:text-6xl">
+              I like building systems that just make sense.
+            </h2>
+          <p className="mt-4 text-xl italic text-[#878783]">Reliable systems. Intentional craft.</p>
+          </div>
+
+          <div className="space-y-6 text-sm leading-8 text-[#b9b9b5]">
+            <p>
+              I&apos;m a full-stack developer who enjoys working on problems that involve
+              real-time systems, scalability, and clean architecture.
+            </p>
+            <p>
+              I focus on writing code that is simple, reliable, and easy to reason about.
+              I care about how things work under the hood.
+            </p>
+            <p>
+              Lately I&apos;ve been building systems around collaboration, cloud
+              infrastructure, and performance.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-16">
+          <p className="mb-4 text-xs tracking-[0.22em] text-[#8a8a85]">CORE STACK</p>
+          <div className="flex flex-wrap gap-3">
+            {["Next.js", "React", "TypeScript", "Node.js", "Python", "AWS"].map((item) => (
+              <span key={item} className="rounded-full border border-[#1a1a1a] px-4 py-1.5 text-xs text-[#d6d6d1]">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      <motion.section
+        id="work"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.15 }}
+        className="border-t border-[#1a1a1a] px-6 py-36 md:px-14 md:py-44"
+      >
+        <div className="mb-10 flex items-end justify-between gap-5">
+          <div>
+            <p className="text-xs tracking-[0.3em] text-[#80807c]">— SELECTED WORK</p>
+            <h2 className="mt-4 text-4xl font-extrabold md:text-6xl">Systems I&apos;ve built.</h2>
+          </div>
+          <a href="https://github.com/Shruthi0719" target="_blank" rel="noreferrer" className="rounded-full border border-[#1a1a1a] px-4 py-2 text-xs text-[#cbcbc6]">
+            All on GitHub ↗
+          </a>
+        </div>
+
+        {projects.map((project, idx) => (
+          <motion.article
+            key={project.num}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="group relative border-b border-[#1a1a1a] py-10 transition-colors duration-300 hover:bg-[#0d0d0d]"
+          >
+            <span className="absolute left-0 top-0 h-full w-px scale-y-0 bg-[#CAFF47] transition-transform duration-300 group-hover:scale-y-100" />
+            <div className="grid gap-6 md:grid-cols-[70px_1fr_auto]">
+              <p className="text-sm text-[#6f6f6c]">{project.num}</p>
+              <div>
+                <div className="flex items-center gap-3">
+                  <h3 className="text-2xl font-bold transition-colors duration-300 group-hover:text-[#CAFF47] md:text-3xl">
+                    {project.title}
+                  </h3>
+                </div>
+                <p className="mt-4 max-w-3xl text-sm leading-8 text-[#9d9d99]">{project.description}</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {project.tags.map((tag) => (
+                    <span key={tag} className="rounded-full bg-[#111] px-3 py-1 text-[11px] text-[#cacac5]">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <a
+                href={project.live || project.github}
+                target="_blank"
+                rel="noreferrer"
+                data-hoverable="true"
+                className="translate-x-3 text-3xl text-[#666661] opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 group-hover:text-[#CAFF47]"
+              >
+                ↗
+              </a>
+            </div>
+          </motion.article>
+        ))}
+      </motion.section>
+
+      <motion.section
+        id="skills"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+        className="border-t border-[#1a1a1a] px-6 py-36 md:px-14 md:py-44"
+      >
+        <p className="text-xs tracking-[0.3em] text-[#80807c]">— CAPABILITIES</p>
+        <h2 className="mt-4 text-4xl font-extrabold md:text-6xl">What I work with.</h2>
+
+        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[
+            { label: "Languages", color: "text-[#CAFF47]", items: ["JavaScript", "TypeScript", "Python", "SQL"] },
+            { label: "Frontend", color: "text-[#d8ff80]", items: ["React", "Next.js", "Tailwind CSS", "Framer Motion"] },
+            { label: "Backend", color: "text-[#ffe082]", items: ["Node.js", "Express", "Flask", "REST APIs", "WebSockets"] },
+            { label: "Core Concepts", color: "text-[#ffb347]", items: ["Distributed Systems", "Real-time Sync", "System Design", "Cloud Security"] },
+            { label: "Tools", color: "text-[#ffd166]", items: ["AWS", "MongoDB", "Git", "Linux"] },
+          ].map((group) => (
+            <div key={group.label} className="rounded-2xl bg-[#111] p-6">
+              <p className={`text-sm font-semibold ${group.color}`}>{group.label}</p>
+              <ul className="mt-3 space-y-1 text-sm text-[#c5c5c0]">
+                {group.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </motion.section>
+
+      <footer id="contact" className="border-t border-[#1a1a1a] px-6 py-24 md:px-14 md:py-28">
+        <h2 className="text-5xl font-extrabold md:text-7xl">Let&apos;s build something.</h2>
+        <div className="mt-10 flex flex-wrap items-center gap-6 text-sm text-[#d0d0cb]">
+          <a href="https://github.com/Shruthi0719" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://linkedin.com/in/rshruthiyadav" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href="mailto:shruthii1819@gmail.com">Email</a>
+        </div>
+        <p className="mt-12 text-xs text-[#6a6a66]">© 2026 R Shruthi Yadav</p>
+      </footer>
+
     </main>
   );
 }
