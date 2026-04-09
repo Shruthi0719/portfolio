@@ -63,7 +63,7 @@ const sectionReveal = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.75, ease: "easeOut" },
   },
 };
 
@@ -89,7 +89,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
     <motion.div
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className="fixed inset-0 z-[110] flex items-center justify-center bg-black"
     >
       <p className="font-[var(--font-heading)] text-7xl font-extrabold text-[#F5F5F0]">
@@ -123,7 +123,7 @@ function Cursor() {
       <motion.div
         style={{ x: ringX, y: ringY }}
         animate={{ scale: 1, opacity: 0.7 }}
-        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
         className="pointer-events-none fixed left-0 top-0 z-[94] h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#CAFF47]"
       />
     </>
@@ -344,7 +344,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: idx * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ delay: idx * 0.08, duration: 0.6, ease: "easeOut" }}
             className="group relative border-b border-[#1a1a1a] py-10 transition-colors duration-300 hover:bg-[#0d0d0d]"
           >
             <span className="absolute left-0 top-0 h-full w-px scale-y-0 bg-[#CAFF47] transition-transform duration-300 group-hover:scale-y-100" />
