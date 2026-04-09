@@ -5,128 +5,90 @@ import { fadeUp, viewportOnce } from "@/lib/motion";
 
 export default function About() {
   return (
-    <section
-      id="about"
-      className="section-pad"
-      style={{ borderTop: "1px solid var(--c-border)" }}
-    >
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+    <section className="relative px-6 md:px-12 py-20">
+      <div className="max-w-7xl mx-auto">
         
-        {/* Label */}
-        <motion.p
-          className="text-label"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={viewportOnce}
-          style={{ marginBottom: "clamp(40px, 6vw, 72px)" }}
-        >
-          — About
-        </motion.p>
+        <div className="grid md:grid-cols-2 gap-16 items-start mb-20">
+          
+          <div>
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              className="text-xs tracking-[0.3em] text-[#c8ff57] mb-6"
+            >
+              ABOUT
+            </motion.p>
 
-        {/* Layout */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "clamp(48px, 8vw, 120px)",
-          }}
-        >
-          {/* Left — statement */}
+            <motion.h2
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              className="text-4xl md:text-6xl font-bold mb-8"
+            >
+              Who I Am
+            </motion.h2>
+
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              className="text-gray-400 leading-relaxed mb-6"
+            >
+              I’m a Computer Science undergrad who enjoys building software that solves real problems — from real-time systems to full-stack applications.
+            </motion.p>
+
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportOnce}
+              className="text-gray-400 leading-relaxed"
+            >
+              I focus on writing clean, scalable code and continuously improving through building, experimenting, and learning.
+            </motion.p>
+          </div>
+
           <motion.div
             variants={fadeUp}
             initial="hidden"
-            whileInView="show"
+            whileInView="visible"
             viewport={viewportOnce}
+            className="text-gray-400 text-lg leading-relaxed"
           >
-            <h2
-              className="text-title"
-              style={{
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              I like building systems
-              <br />
-              that just{" "}
-              <span style={{ fontStyle: "italic", color: "var(--c-muted)" }}>
-                make sense.
-              </span>
-            </h2>
+            Third-year CS student at SNIST, Hyderabad — building systems one commit at a time.
           </motion.div>
+        </div>
 
-          {/* Right — content */}
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            custom={1}
-            viewport={viewportOnce}
-          >
-            <p
-              style={{
-                fontSize: "16px",
-                color: "var(--c-muted)",
-                lineHeight: 1.8,
-                fontWeight: 300,
-                marginBottom: "20px",
-              }}
-            >
-              I’m a full-stack developer who enjoys working on problems that involve
-              real-time systems, scalability, and clean architecture.
+        <div className="grid md:grid-cols-3 gap-6">
+          
+          <div className="border border-white/10 p-6">
+            <p className="text-sm text-gray-500 mb-2">01</p>
+            <h3 className="text-lg font-semibold mb-3">Systems Thinking</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              I think in architectures — event-driven systems, scalable flows, and how components interact.
             </p>
+          </div>
 
-            <p
-              style={{
-                fontSize: "16px",
-                color: "var(--c-muted)",
-                lineHeight: 1.8,
-                fontWeight: 300,
-                marginBottom: "20px",
-              }}
-            >
-              I focus on writing code that is simple, reliable, and easy to reason about.
-              I care about how things work under the hood — not just how they look.
+          <div className="border border-white/10 p-6">
+            <p className="text-sm text-gray-500 mb-2">02</p>
+            <h3 className="text-lg font-semibold mb-3">Builder Mindset</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              I build projects end-to-end — focusing on usability, performance, and real-world impact.
             </p>
+          </div>
 
-            <p
-              style={{
-                fontSize: "16px",
-                color: "var(--c-muted)",
-                lineHeight: 1.8,
-                fontWeight: 300,
-              }}
-            >
-              Lately, I’ve been building systems around collaboration, cloud infrastructure,
-              and performance — trying to understand what makes software feel fast,
-              stable, and intuitive.
+          <div className="border border-white/10 p-6">
+            <p className="text-sm text-gray-500 mb-2">03</p>
+            <h3 className="text-lg font-semibold mb-3">Consistency</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              I learn by building consistently and improving with every project I ship.
             </p>
+          </div>
 
-            {/* Stack */}
-            <div style={{ marginTop: "40px" }}>
-              <p className="text-label" style={{ marginBottom: "16px" }}>
-                Core stack
-              </p>
-
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                {[
-                  "Next.js",
-                  "React",
-                  "TypeScript",
-                  "Node.js",
-                  "Python",
-                  "AWS",
-                  "PostgreSQL",
-                  "MongoDB",
-                  "WebSockets",
-                ].map((skill) => (
-                  <span key={skill} className="tag">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </motion.div>
         </div>
       </div>
     </section>

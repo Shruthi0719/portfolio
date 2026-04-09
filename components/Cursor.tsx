@@ -1,75 +1,88 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Cursor() {
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const dot = document.getElementById("cursor-dot");
-    const ring = document.getElementById("cursor-ring");
-    if (!dot || !ring) return;
+    // Use raw position for dot (snappy)
+    // Use lerped position for ring and glow (smooth)
+    let mouseX = 0;
+    let mouseY = 0;
+    let ringX = 0;
+    let ringY = 0;
+    let glowX = 0;
+    let glowY = 0;
+    let rafId: number;
 
-    let ringX = 0, ringY = 0;
-    let mouseX = 0, mouseY = 0;
-
-    const onMove = (e: MouseEvent) => {
+    const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      dot.style.left = mouseX + "px";
-      dot.style.top = mouseY + "px";
+
+      if (dotRef.current) {
+        dotRef.current.style.left = mouseX + "px";
+        dotRef.current.style.top = mouseY + "px";
+      }
     };
 
-    const animate = () => {
-      ringX += (mouseX - ringX) * 0.12;
-      ringY += (mouseY - ringY) * 0.12;
-      ring.style.left = ringX + "px";
-      ring.style.top = ringY + "px";
-      requestAnimationFrame(animate);
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    const tick = () => {
+      ringX = lerp(ringX, mouseX, 0.12);
+      ringY = lerp(ringY, mouseY, 0.12);
+      glowX = lerp(glowX, mouseX, 0.06);
+      glowY = lerp(glowY, mouseY, 0.06);
+
+      if (ringRef.current) {
+        ringRef.current.style.left = ringX + "px";
+        ringRef.current.style.top = ringY + "px";
+      }
+      if (glowRef.current) {
+        glowRef.current.style.left = glowX + "px";
+        glowRef.current.style.top = glowY + "px";
+      }
+
+      rafId = requestAnimationFrame(tick);
     };
 
-    const onEnter = () => {
-      dot.style.opacity = "1";
-      ring.style.opacity = "1";
-    };
-    const onLeave = () => {
-      dot.style.opacity = "0";
-      ring.style.opacity = "0";
-    };
-
-    // Scale ring on hoverable elements
-    const onLinkEnter = () => {
-      ring.style.width = "56px";
-      ring.style.height = "56px";
-      ring.style.borderColor = "rgba(200,255,87,0.6)";
-    };
-    const onLinkLeave = () => {
-      ring.style.width = "36px";
-      ring.style.height = "36px";
-      ring.style.borderColor = "rgba(200,255,87,0.35)";
+    const onMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "A" ||
+        target.tagName === "BUTTON" ||
+        target.closest("a") ||
+        target.closest("button")
+      ) {
+        document.body.classList.add("hovering");
+      }
     };
 
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseenter", onEnter);
-    document.addEventListener("mouseleave", onLeave);
+    const onMouseOut = () => {
+      document.body.classList.remove("hovering");
+    };
 
-    const hoverEls = document.querySelectorAll("a, button, [data-cursor]");
-    hoverEls.forEach((el) => {
-      el.addEventListener("mouseenter", onLinkEnter);
-      el.addEventListener("mouseleave", onLinkLeave);
-    });
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseover", onMouseOver);
+    window.addEventListener("mouseout", onMouseOut);
 
-    animate();
+    rafId = requestAnimationFrame(tick);
 
     return () => {
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseenter", onEnter);
-      document.removeEventListener("mouseleave", onLeave);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseover", onMouseOver);
+      window.removeEventListener("mouseout", onMouseOut);
+      cancelAnimationFrame(rafId);
     };
   }, []);
 
   return (
     <>
-      <div id="cursor-dot" style={{ opacity: 0 }} />
-      <div id="cursor-ring" style={{ opacity: 0 }} />
+      <div ref={dotRef} className="cursor-dot" />
+      <div ref={ringRef} className="cursor-ring" />
+      <div ref={glowRef} className="cursor-glow" />
     </>
   );
 }

@@ -1,26 +1,26 @@
 import type { Metadata } from "next";
-import { Inter, Syne } from "next/font/google";
 import "./globals.css";
 
-const heading = Syne({
-  subsets: ["latin"],
-  weight: ["800"],
-  variable: "--font-heading",
-});
-
-const body = Inter({
-  subsets: ["latin"],
-  variable: "--font-body",
-});
-
 export const metadata: Metadata = {
-  title: "R Shruthi Yadav — Full-Stack Developer",
-  description: "Full-stack developer building scalable, real-time systems.",
+  title: "R Shruthi Yadav — Software Engineer",
+  description:
+    "Portfolio of R Shruthi Yadav — CS undergrad building cloud security platforms, real-time systems, and robust software.",
+  keywords: ["Software Engineer", "Full Stack", "React", "Next.js", "AWS", "Cloud Security"],
+  authors: [{ name: "R Shruthi Yadav" }],
+  openGraph: {
+    title: "R Shruthi Yadav — Software Engineer",
+    description: "CS undergrad building cloud security platforms, real-time systems, and robust software.",
+    type: "website",
+  },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${heading.variable} ${body.variable}`}>
+    <html lang="en" suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );
