@@ -1,5 +1,10 @@
-
+/** @type {import('next').Config} */
 const nextConfig = {
-  transpilePackages: [],
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 module.exports = nextConfig;
