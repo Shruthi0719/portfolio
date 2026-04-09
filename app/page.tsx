@@ -99,7 +99,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
   );
 }
 
-function Cursor({ overProject }: { overProject: boolean }) {
+function Cursor() {
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
   const ringX = useSpring(x, { stiffness: 170, damping: 20 });
@@ -122,12 +122,10 @@ function Cursor({ overProject }: { overProject: boolean }) {
       />
       <motion.div
         style={{ x: ringX, y: ringY }}
-        animate={{ scale: overProject ? 2.4 : 1, opacity: overProject ? 1 : 0.7 }}
+        animate={{ scale: 1, opacity: 0.7 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="pointer-events-none fixed left-0 top-0 z-[94] flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#CAFF47] text-[10px] font-semibold tracking-[0.14em] text-[#CAFF47]"
-      >
-        {overProject ? "VIEW" : ""}
-      </motion.div>
+        className="pointer-events-none fixed left-0 top-0 z-[94] h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#CAFF47]"
+      />
     </>
   );
 }
@@ -184,46 +182,9 @@ function CodeBackdrop() {
   );
 }
 
-function PreviewCard({ project }: { project: Project | null }) {
-  const [broken, setBroken] = useState<Record<string, boolean>>({});
-  if (!project) return null;
-
-  const imageName =
-    project.num === "01"
-      ? "cloudsec"
-      : project.num === "02"
-        ? "collabcode"
-        : project.num === "03"
-          ? "traffic"
-          : "hospital";
-  const imageSrc = `/images/${imageName}.png`;
-
-  return (
-    <div className="w-72 rounded-xl border border-[#1a1a1a] bg-[#090909] p-4">
-      {broken[imageSrc] ? (
-        <div className="h-32 w-full rounded-lg bg-[linear-gradient(135deg,#CAFF47_0%,#6f8f2a_100%)]" />
-      ) : (
-        <img
-          src={imageSrc}
-          alt="project preview"
-          className="h-32 w-full rounded-lg object-cover"
-          onError={() => setBroken((prev) => ({ ...prev, [imageSrc]: true }))}
-        />
-      )}
-      <p className="mt-3 text-xs tracking-[0.2em] text-[#8d8d89]">PREVIEW</p>
-      <p className="mt-1 font-[var(--font-heading)] text-lg">{project.title}</p>
-    </div>
-  );
-}
-
 export default function Home() {
   const [loaded, setLoaded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [hoverProject, setHoverProject] = useState<Project | null>(null);
-  const previewX = useMotionValue(-400);
-  const previewY = useMotionValue(-400);
-  const springX = useSpring(previewX, { stiffness: 180, damping: 22 });
-  const springY = useSpring(previewY, { stiffness: 180, damping: 22 });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -249,7 +210,7 @@ export default function Home() {
   return (
     <main className="relative min-h-screen bg-black text-[#F5F5F0]">
       <AnimatePresence>{!loaded && <LoadingScreen onDone={() => setLoaded(true)} />}</AnimatePresence>
-      <Cursor overProject={Boolean(hoverProject)} />
+      <Cursor />
       <CodeBackdrop />
 
       <motion.nav
@@ -270,36 +231,45 @@ export default function Home() {
         </div>
       </motion.nav>
 
-      <section id="home" className="flex min-h-screen flex-col justify-center px-6 pt-20 md:px-14">
+      <section id="home" className="flex min-h-screen flex-col justify-center px-6 py-28 md:px-14 md:py-36">
         <motion.h1
-          initial="hidden"
-          animate={loaded ? "show" : "hidden"}
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
-          className="max-w-6xl font-[var(--font-heading)] text-5xl font-extrabold leading-[0.95] md:text-7xl lg:text-[6.5rem]"
+          initial={{ opacity: 0, y: 24 }}
+          animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="max-w-5xl font-[var(--font-heading)] text-5xl font-extrabold leading-[1.02] md:text-6xl lg:text-7xl"
         >
           {heroWords.map((word, i) => (
-            <motion.span
+            <span
               key={`${word}-${i}`}
-              variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
               className={`mr-3 inline-block ${word === "right." ? "text-[#CAFF47]" : "text-[#F5F5F0]"}`}
             >
               {word}
-            </motion.span>
+            </span>
           ))}
         </motion.h1>
 
-        <p className="mt-8 max-w-2xl text-sm text-[#9d9d98]">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+          className="mt-8 max-w-2xl text-sm leading-8 text-[#9d9d98]"
+        >
           Full-stack developer. Curious by nature. Serious about craft.
-        </p>
+        </motion.p>
 
-        <div className="mt-10 flex items-center justify-end gap-5">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={loaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }}
+          className="mt-10 flex items-center justify-end gap-5"
+        >
           <a href="#work" className="rounded-full bg-[#CAFF47] px-6 py-3 text-sm font-semibold text-black">
             View Work →
           </a>
           <a href="#contact" className="text-sm text-[#cecec9]">
             Get in Touch
           </a>
-        </div>
+        </motion.div>
 
         <p className="absolute right-2 top-1/2 -translate-y-1/2 rotate-180 text-[10px] tracking-[0.4em] text-[#5e5e5b] [writing-mode:vertical-rl]">
           SCROLL
@@ -312,17 +282,17 @@ export default function Home() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.2 }}
-        className="px-6 py-32 md:px-14"
+        className="px-6 py-36 md:px-14 md:py-44"
       >
         <div className="grid gap-14 md:grid-cols-2 md:gap-20">
           <div>
             <h2 className="max-w-xl text-4xl font-extrabold leading-tight md:text-6xl">
               I like building systems that just make sense.
             </h2>
-            <p className="mt-4 text-xl italic text-[#878783]">Reliable systems. Intentional craft.</p>
+          <p className="mt-4 text-xl italic text-[#878783]">Reliable systems. Intentional craft.</p>
           </div>
 
-          <div className="space-y-5 text-sm leading-7 text-[#b9b9b5]">
+          <div className="space-y-6 text-sm leading-8 text-[#b9b9b5]">
             <p>
               I&apos;m a full-stack developer who enjoys working on problems that involve
               real-time systems, scalability, and clean architecture.
@@ -356,11 +326,11 @@ export default function Home() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.15 }}
-        className="border-t border-[#1a1a1a] px-6 py-32 md:px-14"
+        className="border-t border-[#1a1a1a] px-6 py-36 md:px-14 md:py-44"
       >
         <div className="mb-10 flex items-end justify-between gap-5">
           <div>
-            <p className="text-xs tracking-[0.22em] text-[#80807c]">— SELECTED WORK</p>
+            <p className="text-xs tracking-[0.3em] text-[#80807c]">— SELECTED WORK</p>
             <h2 className="mt-4 text-4xl font-extrabold md:text-6xl">Systems I&apos;ve built.</h2>
           </div>
           <a href="https://github.com/Shruthi0719" target="_blank" rel="noreferrer" className="rounded-full border border-[#1a1a1a] px-4 py-2 text-xs text-[#cbcbc6]">
@@ -375,24 +345,18 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            onMouseEnter={() => setHoverProject(project)}
-            onMouseLeave={() => setHoverProject(null)}
-            onMouseMove={(e) => {
-              previewX.set(e.clientX + 34);
-              previewY.set(e.clientY - 88);
-            }}
-            className="group border-b border-[#1a1a1a] py-10"
+            className="group relative border-b border-[#1a1a1a] py-10 transition-colors duration-300 hover:bg-[#0d0d0d]"
           >
+            <span className="absolute left-0 top-0 h-full w-px scale-y-0 bg-[#CAFF47] transition-transform duration-300 group-hover:scale-y-100" />
             <div className="grid gap-6 md:grid-cols-[70px_1fr_auto]">
               <p className="text-sm text-[#6f6f6c]">{project.num}</p>
               <div>
                 <div className="flex items-center gap-3">
-                  <h3 className="text-2xl font-bold md:text-3xl">{project.title}</h3>
-                  {project.featured && (
-                    <span className="rounded-full bg-[#CAFF47] px-2.5 py-1 text-[10px] font-bold text-black">FEATURED</span>
-                  )}
+                  <h3 className="text-2xl font-bold transition-colors duration-300 group-hover:text-[#CAFF47] md:text-3xl">
+                    {project.title}
+                  </h3>
                 </div>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-[#9d9d99]">{project.description}</p>
+                <p className="mt-4 max-w-3xl text-sm leading-8 text-[#9d9d99]">{project.description}</p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
                     <span key={tag} className="rounded-full bg-[#111] px-3 py-1 text-[11px] text-[#cacac5]">
@@ -406,7 +370,7 @@ export default function Home() {
                 target="_blank"
                 rel="noreferrer"
                 data-hoverable="true"
-                className="text-3xl text-[#666661] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:text-[#CAFF47]"
+                className="translate-x-3 text-3xl text-[#666661] opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 group-hover:text-[#CAFF47]"
               >
                 ↗
               </a>
@@ -421,9 +385,9 @@ export default function Home() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.2 }}
-        className="border-t border-[#1a1a1a] px-6 py-32 md:px-14"
+        className="border-t border-[#1a1a1a] px-6 py-36 md:px-14 md:py-44"
       >
-        <p className="text-xs tracking-[0.22em] text-[#80807c]">— CAPABILITIES</p>
+        <p className="text-xs tracking-[0.3em] text-[#80807c]">— CAPABILITIES</p>
         <h2 className="mt-4 text-4xl font-extrabold md:text-6xl">What I work with.</h2>
 
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -446,7 +410,7 @@ export default function Home() {
         </div>
       </motion.section>
 
-      <footer id="contact" className="border-t border-[#1a1a1a] px-6 py-20 md:px-14">
+      <footer id="contact" className="border-t border-[#1a1a1a] px-6 py-24 md:px-14 md:py-28">
         <h2 className="text-5xl font-extrabold md:text-7xl">Let&apos;s build something.</h2>
         <div className="mt-10 flex flex-wrap items-center gap-6 text-sm text-[#d0d0cb]">
           <a href="https://github.com/Shruthi0719" target="_blank" rel="noreferrer">GitHub</a>
@@ -456,13 +420,6 @@ export default function Home() {
         <p className="mt-12 text-xs text-[#6a6a66]">© 2026 R Shruthi Yadav</p>
       </footer>
 
-      <motion.div
-        style={{ x: springX, y: springY }}
-        animate={{ opacity: hoverProject ? 1 : 0, scale: hoverProject ? 1 : 0.96 }}
-        className="pointer-events-none fixed left-0 top-0 z-[60] hidden -translate-x-1/2 md:block"
-      >
-        <PreviewCard project={hoverProject} />
-      </motion.div>
     </main>
   );
 }
