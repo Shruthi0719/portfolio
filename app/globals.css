@@ -1,16 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@tailwind components;
-@tailwind utilities;
 
+/* ------------------ THEME ------------------ */
 :root {
-  --background: #000000;
-  --foreground: #f5f5f0;
-  --accent: #caff47;
+  --background: #080808;
+  --foreground: #ededed;
+  --accent: #c8ff57;
   --line: #1a1a1a;
 }
 
+/* ------------------ RESET ------------------ */
 * {
   box-sizing: border-box;
 }
@@ -27,24 +27,39 @@ body {
   font-family: var(--font-body), Inter, sans-serif;
   overflow-x: hidden;
   cursor: none;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ------------------ TYPOGRAPHY ------------------ */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-heading), Syne, sans-serif;
+  font-family: var(--font-body), Inter, sans-serif;
 }
 
+/* ------------------ INTERACTIONS ------------------ */
 a,
 button,
 [data-hoverable="true"] {
   cursor: none;
 }
 
+/* ------------------ SELECTION ------------------ */
 ::selection {
   background: var(--accent);
   color: #000;
+}
+
+/* ------------------ GRAIN (SAFE VERSION) ------------------ */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 3px 3px;
 }
